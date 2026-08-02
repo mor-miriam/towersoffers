@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="mx-build" content="offices-panel-v2">
+<meta name="mx-build" content="offices-panel-v3">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIRIAM · פתרונות הצללה למשרדים וחללי עבודה</title>
 <meta name="description" content="פתרונות וילונות והצללה למשרדים וחללי עבודה בהתאמה אישית — רולר סקרין, בלאאוט, פתרונות אקוסטיים ומנועים חכמים. ייעוץ, מדידה והתקנה מקצועית. MIRIAM House of Design.">
@@ -402,6 +402,10 @@ html[dir=ltr] .spec-info{text-align:left}
 .quote.sqm .th-sqm{display:table-header-group}
 .quote.sqm #rows{display:none}
 .quote.sqm #rowsSqm{display:table-row-group}
+.quote.noFin .th-fin-sqm{display:none}
+.quote.noFin #rowsSqm .finish-cell{display:none}
+.quote.noFin.sqm .th-sqm th:first-child{width:64%}
+.quote.noFin.sqm .th-sqm th:nth-child(2){width:30%}
 @media(max-width:760px){ .quote.sqm tr{grid-template-columns:1fr 1fr} .mode-btn{padding:8px 15px;font-size:12.5px} }
   .hero-slogan{font-size:clamp(17px,1.9vw,21px);font-weight:600;color:var(--ink);margin:4px 0 14px;letter-spacing:-.01em;line-height:1.3}
   .hero-slogan:empty{display:none}
@@ -578,7 +582,7 @@ html[dir=ltr] .spec-info{text-align:left}
           <tr>
             <th style="width:34%" data-i18n="th_product"></th>
             <th style="width:20%" data-i18n="th_sqm"></th>
-            <th style="width:40%" data-i18n="th_finish"></th>
+            <th style="width:40%" class="th-fin-sqm" data-i18n="th_finish"></th>
             <th style="width:6%"></th>
           </tr>
         </thead>
@@ -779,6 +783,13 @@ html[dir=ltr] .spec-info{text-align:left}
       <div><label>מדידה מקצועית — ₪ קבוע להזמנה</label><input type="number" id="adm-measure" min="0"></div>
       <div><label>חיוב מינימלי לפריט (מטר / מ״ר)</label><input type="number" id="adm-min" min="0" step="0.1"></div>
       <div><label>מע״מ %</label><input type="number" id="adm-vat" min="0" step="0.5"></div>
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+        <input type="checkbox" id="adm-sqm-finish" style="width:auto">
+        הצגת בחירת פרופיל / שרשרת במצב «הערכת פרויקט» (לפי מ״ר)
+      </label>
+      <div class="sub" style="margin-top:5px">כשמכובה — במצב «הערכת פרויקט» הלקוח בוחר רק מוצר וכמות מ״ר, בלי פרופיל/שרשרת. במצב «לפי חלון» הבחירה מוצגת תמיד.</div>
     </div>
   </div>
 
@@ -1038,6 +1049,7 @@ const CONTENT_DEFAULT = /*CJSON*/{
  "payAmount": 400,
  "payUrl": "",
  "videoUrl": "",
+ "sqmShowFinish": false,
  "profileColors": [
   {"id":"white","he":"לבן","en":"White","sw":"#F4F4F2","img":""},
   {"id":"cream","he":"קרם","en":"Cream","sw":"#EBE3D4","img":""},
@@ -1223,6 +1235,7 @@ function go(id) { document.getElementById(id).scrollIntoView(); }
 /* ============ רינדור תוכן ============ */
 function applyContent() {
   document.querySelectorAll('[data-c]').forEach(el => { el.textContent = c(el.dataset.c) ?? ''; });
+  const _qt = document.getElementById('quoteTable'); if (_qt) _qt.classList.toggle('noFin', !CONTENT.sqmShowFinish);
   document.getElementById('aboutImg').style.backgroundImage = `url('${CONTENT.aboutImg}')`;
   document.getElementById('featImg').style.backgroundImage = `url('${CONTENT.featImg}')`;
   document.getElementById('motionImg').style.backgroundImage = `url('${CONTENT.motionImg}')`;
@@ -1360,14 +1373,17 @@ function buildOrder() {
     [...rowsSqm.children].forEach(tr => {
       const p = CFG.products[tr.querySelector('.s-product').value]; if (!p) return;
       const sqm = parseFloat(tr.querySelector('.s-sqm').value) || 0;
-      const colorId = tr.querySelector('.s-color').value;
-      const chainId = tr.querySelector('.s-chain').value;
+      let colorId = '', chainId = '';
+      if (CONTENT.sqmShowFinish) {
+        const cs = tr.querySelector('.s-color'), chs = tr.querySelector('.s-chain');
+        colorId = cs ? cs.value : ''; chainId = chs ? chs.value : '';
+      }
       if (sqm > 0) {
         const estInc = sqm * p.price * (1 + (CFG.vatRate||18)/100);
         estTotalInc += estInc;
-        const co = PROFILE_COLORS.find(o=>o.id===colorId);
-        const ch = CHAIN_OPTIONS.find(o=>o.id===chainId);
-        items.push({ kind:'sqm', unit:p.unit, unitLabel:unitLabel(p), product: prodLabel(p), sqm, color: co?colorLabel(co):colorId, chain: ch?colorLabel(ch):chainId, estInc: Math.round(estInc), notes: `פרופיל: ${co?colorLabel(co):colorId} · ${ch?colorLabel(ch):chainId}` });
+        const co = colorId ? PROFILE_COLORS.find(o=>o.id===colorId) : null;
+        const ch = chainId ? CHAIN_OPTIONS.find(o=>o.id===chainId) : null;
+        items.push({ kind:'sqm', unit:p.unit, unitLabel:unitLabel(p), product: prodLabel(p), sqm, color: co?colorLabel(co):'', chain: ch?colorLabel(ch):'', estInc: Math.round(estInc), notes: CONTENT.sqmShowFinish ? `פרופיל: ${co?colorLabel(co):colorId} · ${ch?colorLabel(ch):chainId}` : '' });
       }
     });
     return { items, estTotalInc, mode:'sqm' };
@@ -1782,6 +1798,7 @@ function renderPricesPane() {
   document.getElementById('adm-measure').value = CFG.measureFee ?? 150;
   document.getElementById('adm-min').value = CFG.minCharge;
   document.getElementById('adm-vat').value = CFG.vatRate ?? 18;
+  var _sf = document.getElementById('adm-sqm-finish'); if (_sf) _sf.checked = !!CONTENT.sqmShowFinish;
 }
 function renderAdmin() {
   renderPricesPane();
@@ -1834,6 +1851,7 @@ function collectAdmin() {
   CONTENT.quotesEmail = document.getElementById('adm-quotes-email').value.trim();
   CONTENT.waNumber = document.getElementById('adm-wa-number').value.trim();
   CONTENT.waMsg = document.getElementById('adm-wa-msg').value.trim();
+  var _sf = document.getElementById('adm-sqm-finish'); if (_sf) CONTENT.sqmShowFinish = _sf.checked;
 }
 function refreshQuoteSelects() {
   [...tbody.children].forEach(tr => {
