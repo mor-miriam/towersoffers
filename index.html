@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="mx-build" content="offices-adminfix-v2">
+<meta name="mx-build" content="offices-makepublish-v1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIRIAM · פתרונות הצללה למשרדים וחללי עבודה</title>
 <meta name="description" content="פתרונות וילונות והצללה למשרדים וחללי עבודה בהתאמה אישית — רולר סקרין, בלאאוט, פתרונות אקוסטיים ומנועים חכמים. ייעוץ, מדידה והתקנה מקצועית. MIRIAM House of Design.">
@@ -852,10 +852,9 @@ html[dir=ltr] .spec-info{text-align:left}
     </div>
     <div class="saved-flash" id="pubFlash" style="text-align:right"></div>
     <div class="pub-steps" style="margin-top:18px">
-      <b>הגדרה חד-פעמית (פעם אחת בלבד):</b><br>
-      1. ב-GitHub → Settings → Developer settings → Fine-grained token → הרשאת <b>Contents: Read and write</b> ל-repo.<br>
-      2. ב-Vercel → Project → Settings → Environment Variables → הוסיפו: <code>GH_TOKEN</code> (המפתח) ו-<code>PUBLISH_SECRET</code> (סיסמה שתבחרו) → Redeploy.<br>
-      3. הזינו כאן למעלה את אותה <code>PUBLISH_SECRET</code> ולחצו «פרסום ישיר». זהו — מעכשיו הכל בכפתור אחד.<br>
+      <b>הכל כבר מוגדר ✓</b><br>
+      מנוע הפרסום מחובר ל-GitHub שלכם דרך Make — אין צורך ביצירת טוקן או בהגדרות Vercel.<br>
+      מה שנותר: הזינו כאן למעלה פעם אחת את <b>סיסמת הפרסום</b> (קיבלתם אותה בצ׳אט) ולחצו «פרסום ישיר». מעכשיו הכל בכפתור אחד.<br>
       <span style="color:var(--gray)">גיבוי ידני תמיד זמין: «הורדת קובץ» → העלאה ל-GitHub.</span>
     </div>
   </div>
@@ -1853,17 +1852,17 @@ function exportSite() {
 function flashPub(msg, err) { const f = document.getElementById('pubFlash'); if (!f) return; f.textContent = msg; f.style.color = err ? '#a33' : '#1d7a3e'; }
 async function publishDirect() {
   collectAdmin(); persist();
+  const PUBLISH_WEBHOOK = 'https://hook.eu2.make.com/w5q4g5vtsjlsrgg4yhah3wb273t4io69';
   const fld = document.getElementById('pub-secret');
   const secret = (fld && fld.value.trim()) || localStorage.getItem('miriam-publish-secret') || '';
-  if (!secret) { flashPub('נא להזין סיסמת פרסום (PUBLISH_SECRET)', true); return; }
+  if (!secret) { flashPub('נא להזין סיסמת פרסום', true); return; }
   localStorage.setItem('miriam-publish-secret', secret);
   flashPub('מפרסם… ⏳');
   try {
     const src = await buildUpdatedSource();
-    const resp = await fetch('/api/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret, content: src, message: 'עדכון מפאנל הניהול' }) });
-    let jj = {}; try { jj = await resp.json(); } catch (e) {}
-    if (resp.ok && jj.ok) { flashPub('✓ פורסם! האתר יתעדכן תוך ~20 שניות'); }
-    else { flashPub('שגיאה בפרסום: ' + (jj.error || ('HTTP ' + resp.status)), true); }
+    const resp = await fetch(PUBLISH_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret, content: src, message: 'עדכון מפאנל הניהול' }) });
+    if (resp.ok) { flashPub('✓ נשלח לפרסום! האתר יתעדכן תוך כ-30 שניות — רעננו את הדף לבדיקה'); }
+    else { flashPub('שגיאה בפרסום: HTTP ' + resp.status, true); }
   } catch (e) { flashPub('שגיאה: ' + (e.message || e), true); }
 }
 
