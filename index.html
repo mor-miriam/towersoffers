@@ -871,14 +871,54 @@ html[dir=ltr] .spec-info{text-align:left}
    ============================================================ */
 const PRICES_DEFAULT = /*PJSON*/{
  "products": {
-  "screen": { "label": "רולר סקרין (Screen)", "en": "Roller Screen", "unit": "sqm", "price": 260, "origPrice": 340, "hasElectric": true },
-  "fabric": { "label": "וילון בד", "en": "Fabric Curtain", "unit": "rm", "price": 480, "origPrice": 640, "hasElectric": true },
-  "blackout": { "label": "רולר בלאאוט (האפלה)", "en": "Blackout Roller", "unit": "sqm", "price": 300, "origPrice": 390, "hasElectric": true },
-  "dblroller": { "label": "דאבל רולר (יום/לילה)", "en": "Double Roller (Day/Night)", "unit": "sqm", "price": 450, "origPrice": 600, "hasElectric": true },
-  "vertical": { "label": "אנכי / ורטיקל", "en": "Vertical Blind", "unit": "sqm", "price": 220, "origPrice": 300, "hasElectric": true },
-  "panel": { "label": "פאנל יפני (Panel Glide)", "en": "Panel Glide", "unit": "sqm", "price": 380, "origPrice": 520, "hasElectric": true },
-  "duette": { "label": "דואט אקוסטי (חלת דבש)", "en": "Duette Acoustic", "unit": "sqm", "price": 420, "origPrice": 650, "hasElectric": true },
-  "venetian": { "label": "תריס ונציאני אלומיניום", "en": "Aluminium Venetian", "unit": "sqm", "price": 250, "origPrice": 375, "hasElectric": false }
+  "screen": {
+   "label": "גלילה רשת מדגם סקרין (Screen)",
+   "en": "Roller Screen",
+   "unit": "sqm",
+   "price": 260,
+   "origPrice": 340,
+   "hasElectric": true
+  },
+  "fabric": {
+   "label": "וילונות הסטה מבד",
+   "en": "Fabric Curtain",
+   "unit": "rm",
+   "price": 480,
+   "origPrice": 640,
+   "hasElectric": true
+  },
+  "blackout": {
+   "label": "גלילה מדגם האפלה (blackout)",
+   "en": "Blackout Roller",
+   "unit": "sqm",
+   "price": 300,
+   "origPrice": 390,
+   "hasElectric": true
+  },
+  "dblroller": {
+   "label": "דאבל רולר (יום/לילה)",
+   "en": "Double Roller (Day/Night)",
+   "unit": "sqm",
+   "price": 450,
+   "origPrice": 600,
+   "hasElectric": true
+  },
+  "duette": {
+   "label": "דואט  (חלת דבש)",
+   "en": "Duette Acoustic",
+   "unit": "sqm",
+   "price": 420,
+   "origPrice": 650,
+   "hasElectric": true
+  },
+  "venetian": {
+   "label": "תריס ונציאני אלומיניום",
+   "en": "Aluminium Venetian",
+   "unit": "sqm",
+   "price": 250,
+   "origPrice": 375,
+   "hasElectric": false
+  }
  },
  "motorSqm": 1350,
  "motorRm": 1100,
@@ -1001,14 +1041,38 @@ const CONTENT_DEFAULT = /*CJSON*/{
   }
  ],
  "logos": [
-  { "src": "", "cap": "תדהר" },
-  { "src": "", "cap": "כלל ביטוח" },
-  { "src": "", "cap": "אשטרום" },
-  { "src": "", "cap": "אלקטרא" },
-  { "src": "", "cap": "שיכון ובינוי" },
-  { "src": "", "cap": "אזורים" },
-  { "src": "", "cap": "גינדי" },
-  { "src": "", "cap": "רוטשטיין" }
+  {
+   "src": "",
+   "cap": "תדהר"
+  },
+  {
+   "src": "",
+   "cap": "כלל ביטוח"
+  },
+  {
+   "src": "",
+   "cap": "אשטרום"
+  },
+  {
+   "src": "",
+   "cap": "אלקטרא"
+  },
+  {
+   "src": "",
+   "cap": "שיכון ובינוי"
+  },
+  {
+   "src": "",
+   "cap": "אזורים"
+  },
+  {
+   "src": "",
+   "cap": "גינדי"
+  },
+  {
+   "src": "",
+   "cap": "רוטשטיין"
+  }
  ],
  "visitTitle": "בואו להתרשם מקרוב",
  "visitLead": "באולם התצוגה שלנו תמצאו קולקציה רחבה של בדים איכותיים ממיטב היצרנים בעולם — בדי וילונות, בדי האפלה, בדים חצי־שקופים וטקסטורליים. תקבלו ייעוץ מקצועי ואישי, באווירה משפחתית חמה.",
