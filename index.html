@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="mx-build" content="offices-makepublish-v1">
+<meta name="mx-build" content="offices-panel-v2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIRIAM · פתרונות הצללה למשרדים וחללי עבודה</title>
 <meta name="description" content="פתרונות וילונות והצללה למשרדים וחללי עבודה בהתאמה אישית — רולר סקרין, בלאאוט, פתרונות אקוסטיים ומנועים חכמים. ייעוץ, מדידה והתקנה מקצועית. MIRIAM House of Design.">
@@ -748,6 +748,7 @@ html[dir=ltr] .spec-info{text-align:left}
     <button class="on" onclick="showTab(this,'t-prices')">מחירים</button>
     <button onclick="showTab(this,'t-content')">טקסטים ותמונות</button>
     <button onclick="showTab(this,'t-gallery')">גלריה</button>
+    <button onclick="showTab(this,'t-finishes')">צבעים וגימורים</button>
     <button onclick="showTab(this,'t-terms')">תקנון</button>
     <button onclick="showTab(this,'t-pay')">תשלום</button>
     <button onclick="showTab(this,'t-pub')">פרסום</button>
@@ -812,6 +813,17 @@ html[dir=ltr] .spec-info{text-align:left}
     </div>
   </div>
 
+  <div class="apane" id="t-finishes">
+    <h4 style="margin-top:0">צבעי פרופיל</h4>
+    <div class="sub">לכל צבע: שם בעברית ובאנגלית, גוון (צבע #hex או gradient) ותמונה אופציונלית שתוצג בהגדלה. מופיע גם בבורר שבטופס ההצעה.</div>
+    <div id="finProfileAdmin"></div>
+    <button class="abtn" style="margin-top:8px" onclick="finAdd('profile')">+ הוספת צבע פרופיל</button>
+    <h4 style="margin-top:26px">שרשראות / גימורים</h4>
+    <div class="sub">אותו דבר עבור סוגי השרשרת / גימור ההפעלה.</div>
+    <div id="finChainAdmin"></div>
+    <button class="abtn" style="margin-top:8px" onclick="finAdd('chain')">+ הוספת שרשרת/גימור</button>
+  </div>
+
   <div class="apane" id="t-terms">
     <label class="flabel">כותרת התקנון</label>
     <input type="text" id="adm-terms-title">
@@ -843,19 +855,17 @@ html[dir=ltr] .spec-info{text-align:left}
 
   <div class="apane" id="t-pub">
     <h4 style="margin-top:0">פרסום ישיר לאתר (אוטומטי)</h4>
-    <div class="sub">כפתור אחד מפרסם את כל השינויים ישירות לאתר החי — בלי הורדה והעלאה ידנית. דורש הגדרה חד-פעמית (למטה).</div>
-    <label class="flabel">סיסמת פרסום (Publish Secret)</label>
-    <input type="password" id="pub-secret" placeholder="נשמרת בדפדפן שלך בלבד — לא באתר">
-    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+    <div class="sub">כפתור אחד מפרסם את כל השינויים ישירות לאתר החי — בלי הורדה והעלאה. הפרסום מאובטח אוטומטית לפי הכניסה שלך לפאנל.</div>
+    <input type="password" id="pub-secret" style="display:none">
+    <div style="margin-top:6px; display:flex; gap:10px; flex-wrap:wrap">
       <button class="abtn" onclick="publishDirect()">🚀 פרסום ישיר לאתר</button>
       <button class="abtn abtn-ghost" onclick="exportSite()">⬇ הורדת קובץ (ידני)</button>
     </div>
     <div class="saved-flash" id="pubFlash" style="text-align:right"></div>
     <div class="pub-steps" style="margin-top:18px">
-      <b>הכל כבר מוגדר ✓</b><br>
-      מנוע הפרסום מחובר ל-GitHub שלכם דרך Make — אין צורך ביצירת טוקן או בהגדרות Vercel.<br>
-      מה שנותר: הזינו כאן למעלה פעם אחת את <b>סיסמת הפרסום</b> (קיבלתם אותה בצ׳אט) ולחצו «פרסום ישיר». מעכשיו הכל בכפתור אחד.<br>
-      <span style="color:var(--gray)">גיבוי ידני תמיד זמין: «הורדת קובץ» → העלאה ל-GitHub.</span>
+      <b>הכל מוכן ✓</b><br>
+      עורכים תוכן / תמונות / צבעים / מחירים ← לוחצים «שמירה» ← לוחצים «🚀 פרסום ישיר». האתר מתעדכן לכל הגולשים תוך כ-30 שניות.<br>
+      <span style="color:var(--gray)">גיבוי ידני תמיד זמין: «הורדת קובץ» ← העלאה ל-GitHub.</span>
     </div>
   </div>
 
@@ -871,54 +881,14 @@ html[dir=ltr] .spec-info{text-align:left}
    ============================================================ */
 const PRICES_DEFAULT = /*PJSON*/{
  "products": {
-  "screen": {
-   "label": "גלילה רשת מדגם סקרין (Screen)",
-   "en": "Roller Screen",
-   "unit": "sqm",
-   "price": 260,
-   "origPrice": 340,
-   "hasElectric": true
-  },
-  "fabric": {
-   "label": "וילונות הסטה מבד",
-   "en": "Fabric Curtain",
-   "unit": "rm",
-   "price": 480,
-   "origPrice": 640,
-   "hasElectric": true
-  },
-  "blackout": {
-   "label": "גלילה מדגם האפלה (blackout)",
-   "en": "Blackout Roller",
-   "unit": "sqm",
-   "price": 300,
-   "origPrice": 390,
-   "hasElectric": true
-  },
-  "dblroller": {
-   "label": "דאבל רולר (יום/לילה)",
-   "en": "Double Roller (Day/Night)",
-   "unit": "sqm",
-   "price": 450,
-   "origPrice": 600,
-   "hasElectric": true
-  },
-  "duette": {
-   "label": "דואט  (חלת דבש)",
-   "en": "Duette Acoustic",
-   "unit": "sqm",
-   "price": 420,
-   "origPrice": 650,
-   "hasElectric": true
-  },
-  "venetian": {
-   "label": "תריס ונציאני אלומיניום",
-   "en": "Aluminium Venetian",
-   "unit": "sqm",
-   "price": 250,
-   "origPrice": 375,
-   "hasElectric": false
-  }
+  "screen": { "label": "רולר סקרין (Screen)", "en": "Roller Screen", "unit": "sqm", "price": 260, "origPrice": 340, "hasElectric": true },
+  "fabric": { "label": "וילון בד", "en": "Fabric Curtain", "unit": "rm", "price": 480, "origPrice": 640, "hasElectric": true },
+  "blackout": { "label": "רולר בלאאוט (האפלה)", "en": "Blackout Roller", "unit": "sqm", "price": 300, "origPrice": 390, "hasElectric": true },
+  "dblroller": { "label": "דאבל רולר (יום/לילה)", "en": "Double Roller (Day/Night)", "unit": "sqm", "price": 450, "origPrice": 600, "hasElectric": true },
+  "vertical": { "label": "אנכי / ורטיקל", "en": "Vertical Blind", "unit": "sqm", "price": 220, "origPrice": 300, "hasElectric": true },
+  "panel": { "label": "פאנל יפני (Panel Glide)", "en": "Panel Glide", "unit": "sqm", "price": 380, "origPrice": 520, "hasElectric": true },
+  "duette": { "label": "דואט אקוסטי (חלת דבש)", "en": "Duette Acoustic", "unit": "sqm", "price": 420, "origPrice": 650, "hasElectric": true },
+  "venetian": { "label": "תריס ונציאני אלומיניום", "en": "Aluminium Venetian", "unit": "sqm", "price": 250, "origPrice": 375, "hasElectric": false }
  },
  "motorSqm": 1350,
  "motorRm": 1100,
@@ -1041,38 +1011,14 @@ const CONTENT_DEFAULT = /*CJSON*/{
   }
  ],
  "logos": [
-  {
-   "src": "",
-   "cap": "תדהר"
-  },
-  {
-   "src": "",
-   "cap": "כלל ביטוח"
-  },
-  {
-   "src": "",
-   "cap": "אשטרום"
-  },
-  {
-   "src": "",
-   "cap": "אלקטרא"
-  },
-  {
-   "src": "",
-   "cap": "שיכון ובינוי"
-  },
-  {
-   "src": "",
-   "cap": "אזורים"
-  },
-  {
-   "src": "",
-   "cap": "גינדי"
-  },
-  {
-   "src": "",
-   "cap": "רוטשטיין"
-  }
+  { "src": "", "cap": "תדהר" },
+  { "src": "", "cap": "כלל ביטוח" },
+  { "src": "", "cap": "אשטרום" },
+  { "src": "", "cap": "אלקטרא" },
+  { "src": "", "cap": "שיכון ובינוי" },
+  { "src": "", "cap": "אזורים" },
+  { "src": "", "cap": "גינדי" },
+  { "src": "", "cap": "רוטשטיין" }
  ],
  "visitTitle": "בואו להתרשם מקרוב",
  "visitLead": "באולם התצוגה שלנו תמצאו קולקציה רחבה של בדים איכותיים ממיטב היצרנים בעולם — בדי וילונות, בדי האפלה, בדים חצי־שקופים וטקסטורליים. תקבלו ייעוץ מקצועי ואישי, באווירה משפחתית חמה.",
@@ -1091,7 +1037,25 @@ const CONTENT_DEFAULT = /*CJSON*/{
  "termsText": "1. כללי\nהאתר מופעל על ידי וילונות מרים עזרא בע״מ, ח.פ 516573516 — MIRIAM House of Design (להלן: «החברה»). השימוש באתר ובמחשבון הצעת המחיר כפוף לתנאים אלה.\n\n2. ההטבה\nהמחירים המוצגים הינם מחירי פרויקט בלעדיים ללקוחות משרדים וחללי עבודה בלבד, ובתוקף עד להודעה חדשה. החברה רשאית לעדכן את המחירון בכל עת.\n\n3. הצעת המחיר\nהחישוב באתר מהווה הערכה בלבד על בסיס המידות שהוזנו על ידי הלקוח. ההצעה הסופית תיקבע לאחר מדידה מקצועית בשטח על ידי מודד מטעם החברה. כל המחירים כוללים מע״מ אלא אם צוין אחרת.\n\n3א. בדים ותמחור וילונות בד\n• וילונות בד דקורטיבי — הבדים הינם מתוך קטלוג הבדים MYTM, עד מחיר של 140 ₪ למטר בד. בד במחיר גבוה יותר — בתוספת תשלום בהתאם למחירון הקטלוג.\n• וילונות בד האפלה — הבדים הינם מתוך קטלוג הבדים MYTM, עד מחיר של 140 ₪ למטר בד. התמחור מחושב לפי תפירת בד פרוס, ביחס של 1.3 מטר בד לכל 1 מטר מסילה.\n\n4. שריון מחיר ותשלום מקדמה\nשריון המחיר מתבצע באמצעות תשלום מקדמה מאובטח. סכום המקדמה מתקזז במלואו מסכום ההזמנה הסופית. לאחר התשלום תישלח ללקוח הודעת אישור, ונציג מטעמנו יצור קשר לתיאום מדידה מקצועית בשטח. שריון המחיר מקבע את מחירי הפרויקט עבור הלקוח. ביטול — בהתאם לחוק הגנת הצרכן, התשמ״א-1981: ניתן לבטל את העסקה בתוך 14 יום ממועד התשלום ולקבל החזר מלא של המקדמה, בניכוי דמי ביטול כדין.\n\n5. אספקה והתקנה\nמועדי האספקה וההתקנה ייקבעו מול הלקוח לאחר המדידה. החברה מתחייבת לעמידה בלוחות הזמנים שיסוכמו בהזמנה הסופית.\n\n6. אחריות\nעל כל המוצרים חלה אחריות יצרן רשמית ומלאה בהתאם לתעודת האחריות שתימסר עם ההתקנה. על מנועי הוילונות החשמליים — 5 שנות אחריות מרגע ההתקנה.\n\n7. פרטיות\nהפרטים הנמסרים באתר משמשים ליצירת קשר ולטיפול בהזמנה בלבד, ולא יועברו לצד שלישי למעט לצורך השלמת העסקה.\n\n8. יצירת קשר\nלשאלות ובירורים: אולם התצוגה — לח״י 2, בני ברק, מתחם דן דיזיין סנטר.\nטלפון: 03-5509795 · מייל: office@miriam.co.il\nוילונות מרים עזרא בע״מ · ח.פ 516573516",
  "payAmount": 400,
  "payUrl": "",
- "videoUrl": ""
+ "videoUrl": "",
+ "profileColors": [
+  {"id":"white","he":"לבן","en":"White","sw":"#F4F4F2","img":""},
+  {"id":"cream","he":"קרם","en":"Cream","sw":"#EBE3D4","img":""},
+  {"id":"lgray","he":"אפור בהיר","en":"Light Grey","sw":"#B8BCC0","img":""},
+  {"id":"dgray","he":"אפור כהה","en":"Dark Grey","sw":"#585C61","img":""},
+  {"id":"black","he":"שחור","en":"Black","sw":"#1A1A1A","img":""},
+  {"id":"anod","he":"אנודייז כסף","en":"Anodized Silver","sw":"linear-gradient(135deg,#e2e4e7,#a9adb4 55%,#e8eaec)","img":""},
+  {"id":"champ","he":"שמפניה","en":"Champagne","sw":"linear-gradient(135deg,#eaddbf,#cbb489)","img":""},
+  {"id":"bronze","he":"ברונזה","en":"Bronze","sw":"linear-gradient(135deg,#8a6a45,#5f4527)","img":""}
+ ],
+ "chains": [
+  {"id":"plastic-white","he":"שרשרת פלסטיק לבן","en":"White plastic chain","sw":"#F4F4F2","img":""},
+  {"id":"plastic-black","he":"שרשרת פלסטיק שחור","en":"Black plastic chain","sw":"#1A1A1A","img":""},
+  {"id":"plastic-grey","he":"שרשרת פלסטיק אפור","en":"Grey plastic chain","sw":"#9AA0A6","img":""},
+  {"id":"metal-nickel","he":"שרשרת מתכת ניקל","en":"Nickel metal chain","sw":"linear-gradient(135deg,#dcdfe3,#a7abb1)","img":""},
+  {"id":"metal-black","he":"שרשרת מתכת שחור","en":"Black metal chain","sw":"linear-gradient(135deg,#3a3a3a,#111)","img":""},
+  {"id":"motor","he":"ממונע חשמלי (ללא שרשרת)","en":"Motorized (no chain)","sw":"linear-gradient(135deg,#c9a24a,#a67c28)","img":""}
+ ]
 }/*CJSONEND*/;
 
 const PRICES_KEY = 'miriam-offices-prices-v2';
@@ -1601,13 +1565,14 @@ function sha256js(str){
   let out=''; for(let i=0;i<8;i++) out+=H[i].toString(16).padStart(8,'0'); return out;
 }
 async function openAdmin() {
-  if (sessionStorage.getItem('miriam-admin-auth') !== 'ok') {
+  if (!sessionStorage.getItem('miriam-admin-pw')) {
     const pw = prompt('פאנל ניהול — הזינו סיסמה:');
     if (pw === null) return;
     let hash = '';
     try { hash = await sha256(pw); } catch(e) {}
     if (hash !== ADMIN_HASH) { alert('סיסמה שגויה'); return; }
     sessionStorage.setItem('miriam-admin-auth', 'ok');
+    sessionStorage.setItem('miriam-admin-pw', pw);
   }
   renderAdmin();
   document.getElementById('adminBg').classList.add('open');
@@ -1721,6 +1686,39 @@ function compressFile(file, cb) {
   img.src = URL.createObjectURL(file);
 }
 
+/* --- ניהול צבעי פרופיל ושרשראות --- */
+function finList(kind){ return kind==='profile' ? (CONTENT.profileColors || (CONTENT.profileColors=[])) : (CONTENT.chains || (CONTENT.chains=[])); }
+function finRowHTML(kind,i){
+  const o = finList(kind)[i]; if(!o) return '';
+  const ts = 'width:42px;height:42px;border-radius:6px;object-fit:cover;border:1px solid #ddd;flex:none';
+  const media = o.img ? `<img class="fmedia" src="${o.img}" style="${ts}">` : `<span class="fmedia" style="${ts};display:inline-block;background:${o.sw||'#ccc'}"></span>`;
+  const esc = s => (s||'').replace(/"/g,'&quot;');
+  return `<div class="fin-admin-row" data-kind="${kind}" data-i="${i}" style="display:flex;gap:6px;align-items:center;margin-bottom:7px;flex-wrap:wrap">
+    ${media}
+    <input type="text" value="${esc(o.he)}" placeholder="שם עברית" style="flex:1;min-width:96px" oninput="finSet('${kind}',${i},'he',this.value)">
+    <input type="text" value="${esc(o.en)}" placeholder="Name EN" style="flex:1;min-width:96px" oninput="finSet('${kind}',${i},'en',this.value)">
+    <input type="text" value="${esc(o.sw)}" placeholder="#hex / gradient" style="flex:1;min-width:120px" oninput="finSet('${kind}',${i},'sw',this.value)">
+    <button class="abtn abtn-ghost" onclick="finPick('${kind}',${i})">תמונה</button>
+    <input type="file" accept="image/*" style="display:none" id="finfile-${kind}-${i}" onchange="finFile('${kind}',${i},this)">
+    <button class="abtn abtn-ghost" title="מחיקה" onclick="finDel('${kind}',${i})">🗑</button>
+  </div>`;
+}
+function renderFinishAdmin(){
+  const pa=document.getElementById('finProfileAdmin'), ca=document.getElementById('finChainAdmin');
+  if(pa) pa.innerHTML = finList('profile').map((_,i)=>finRowHTML('profile',i)).join('');
+  if(ca) ca.innerHTML = finList('chain').map((_,i)=>finRowHTML('chain',i)).join('');
+}
+function finSet(kind,i,field,val){
+  const o=finList(kind)[i]; if(!o) return; o[field]=val;
+  if(field==='sw' && !o.img){ const m=document.querySelector(`.fin-admin-row[data-kind="${kind}"][data-i="${i}"] .fmedia`); if(m) m.style.background=val; }
+  finApply();
+}
+function finPick(kind,i){ document.getElementById(`finfile-${kind}-${i}`).click(); }
+function finFile(kind,i,input){ compressFile(input.files[0], url=>{ const o=finList(kind)[i]; if(o){ o.img=url; } renderFinishAdmin(); finApply(); flash('✓ התמונה נטענה — לחצו שמירה'); }); }
+function finAdd(kind){ finList(kind).push({ id:'c'+Date.now(), he:'', en:'', sw:'#cccccc', img:'' }); renderFinishAdmin(); finApply(); }
+function finDel(kind,i){ if(finList(kind).length<=1){ flash('חייב להישאר לפחות פריט אחד', true); return; } finList(kind).splice(i,1); renderFinishAdmin(); finApply(); }
+function finApply(){ syncFinishes(); persist(); renderFinishes(); refreshQuoteSelects(); }
+
 /* --- ניהול גרידים (מוצרים + פרויקטים) --- */
 const GRID_BOX = { gallery:'galAdmin', productsGrid:'prodGridAdmin', logos:'logosAdmin' };
 function renderGalleryAdmin() {
@@ -1789,6 +1787,7 @@ function renderAdmin() {
   renderPricesPane();
   renderContentPane();
   renderGalleryAdmin();
+  renderFinishAdmin();
   document.getElementById('adm-terms-title').value = CONTENT.termsTitle;
   document.getElementById('adm-terms').value = CONTENT.termsText;
   document.getElementById('adm-pay-amount').value = CONTENT.payAmount;
@@ -1883,6 +1882,7 @@ function resetAdmin() {
   if (!confirm('לאפס את כל התוכן והמחירים לברירת המחדל?')) return;
   CFG = JSON.parse(JSON.stringify(PRICES_DEFAULT));
   CONTENT = JSON.parse(JSON.stringify(CONTENT_DEFAULT));
+  syncFinishes();
   persist();
   renderAdmin();
   refreshQuoteSelects();
@@ -1918,9 +1918,8 @@ async function publishDirect() {
   collectAdmin(); persist();
   const PUBLISH_WEBHOOK = 'https://hook.eu2.make.com/w5q4g5vtsjlsrgg4yhah3wb273t4io69';
   const fld = document.getElementById('pub-secret');
-  const secret = (fld && fld.value.trim()) || localStorage.getItem('miriam-publish-secret') || '';
-  if (!secret) { flashPub('נא להזין סיסמת פרסום', true); return; }
-  localStorage.setItem('miriam-publish-secret', secret);
+  const secret = sessionStorage.getItem('miriam-admin-pw') || (fld && fld.value.trim()) || '';
+  if (!secret) { flashPub('נא להתחבר לפאנל תחילה', true); return; }
   flashPub('מפרסם… ⏳');
   try {
     const src = await buildUpdatedSource();
@@ -1983,24 +1982,9 @@ function sendOrderIfPaid() {
 }
 
 /* ============ צבעי פרופיל, שרשראות, מפרטים, לוגואות ============ */
-const PROFILE_COLORS = [
-  { id:'white',  he:'לבן',        en:'White',            sw:'#F4F4F2', img:'' },
-  { id:'cream',  he:'קרם',        en:'Cream',            sw:'#EBE3D4', img:'' },
-  { id:'lgray',  he:'אפור בהיר', en:'Light Grey', sw:'#B8BCC0', img:'' },
-  { id:'dgray',  he:'אפור כהה',  en:'Dark Grey',  sw:'#585C61', img:'' },
-  { id:'black',  he:'שחור',       en:'Black',           sw:'#1A1A1A', img:'' },
-  { id:'anod',   he:'אנודייז כסף', en:'Anodized Silver', sw:'linear-gradient(135deg,#e2e4e7,#a9adb4 55%,#e8eaec)', img:'' },
-  { id:'champ',  he:'שמפניה',    en:'Champagne',       sw:'linear-gradient(135deg,#eaddbf,#cbb489)', img:'' },
-  { id:'bronze', he:'ברונזה',     en:'Bronze',          sw:'linear-gradient(135deg,#8a6a45,#5f4527)', img:'' }
-];
-const CHAIN_OPTIONS = [
-  { id:'plastic-white', he:'שרשרת פלסטיק לבן', en:'White plastic chain', sw:'#F4F4F2', img:'' },
-  { id:'plastic-black', he:'שרשרת פלסטיק שחור', en:'Black plastic chain', sw:'#1A1A1A', img:'' },
-  { id:'plastic-grey',  he:'שרשרת פלסטיק אפור', en:'Grey plastic chain', sw:'#9AA0A6', img:'' },
-  { id:'metal-nickel',  he:'שרשרת מתכת ניקל',  en:'Nickel metal chain', sw:'linear-gradient(135deg,#dcdfe3,#a7abb1)', img:'' },
-  { id:'metal-black',   he:'שרשרת מתכת שחור',  en:'Black metal chain', sw:'linear-gradient(135deg,#3a3a3a,#111)', img:'' },
-  { id:'motor',         he:'ממונע חשמלי (ללא שרשרת)', en:'Motorized (no chain)', sw:'linear-gradient(135deg,#c9a24a,#a67c28)', img:'' }
-];
+let PROFILE_COLORS = CONTENT.profileColors || (CONTENT.profileColors = []);
+let CHAIN_OPTIONS = CONTENT.chains || (CONTENT.chains = []);
+function syncFinishes(){ PROFILE_COLORS = CONTENT.profileColors || (CONTENT.profileColors = []); CHAIN_OPTIONS = CONTENT.chains || (CONTENT.chains = []); }
 const SPECS = {
   screen:    { img:'https://www.miriam.co.il/cdn/shop/files/Cou_MB10_SCR-3005-08.jpg?v=1773682226&width=1000', material:'בד סקרין (פייברגלס/PVC)', maxW:'עד 300 ס״מ', maxH:'עד 320 ס״מ', open:'1%–5%', black:'שקוף למחצה', uv:'עד 95%', fr:'עמיד אש B-s1,d0 (FR)', ac:'נמוכה', op:'ידני / חשמלי', notes:'שליטה בסנוור ובקרינה ללא חסימת נוף — הבחירה המובילה למשרדים ולחזיתות זכוכית.' },
   fabric:    { img:'https://www.miriam.co.il/cdn/shop/files/WhatsApp_2024-08-25_18.02.06_94cc69a5.jpg?v=1725979388&width=1000', material:'בד וילון דקורטיבי / האפלה', maxW:'ללא הגבלה (תפירה לפי מסילה)', maxH:'עד 320 ס״מ', open:'לפי בד', black:'לפי בד (עד מלאה)', uv:'לפי בד', fr:'בד עמיד אש (FR) בהזמנה', ac:'בינונית-גבוהה', op:'משיכה ידנית / מסילה חשמלית', notes:'וילונות בד בהתאמה אישית לחדרי הנהלה, לובי וחדרי ישיבות — התמחור לפי מטר רץ.' },
